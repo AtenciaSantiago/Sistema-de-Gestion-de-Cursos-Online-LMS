@@ -1,0 +1,90 @@
+<div class="page-head">
+  <div>
+    <h1>{{ titulo }}</h1>
+    @if (!esAdmin) {
+      <p class="subtitulo">Los cursos nuevos quedan en BORRADOR hasta que el administrador los publique</p>
+    }
+  </div>
+  <button mat-flat-button color="primary" type="button" (click)="nuevo()">
+    <mat-icon>add</mat-icon>
+    Nuevo curso
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading"><mat-spinner /></div>
+} @else if (dataSource.data.length === 0) {
+  <!-- HU-07 esc. 2 -->
+  <div class="vacio mat-elevation-z1">
+    <mat-icon>menu_book</mat-icon>
+    <p>{{ mensajeVacio }}</p>
+  </div>
+} @else {
+  <div class="table-wrap mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="nombre_curso">
+        <th mat-header-cell *matHeaderCellDef>Curso</th>
+        <td mat-cell *matCellDef="let c">{{ c.nombre_curso }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre_categoria">
+        <th mat-header-cell *matHeaderCellDef>Categoría</th>
+        <td mat-cell *matCellDef="let c">{{ c.nombre_categoria }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre_docente">
+        <th mat-header-cell *matHeaderCellDef>Profesor</th>
+        <td mat-cell *matCellDef="let c">{{ c.nombre_docente || 'Sin asignar' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="numero_lecciones">
+        <th mat-header-cell *matHeaderCellDef>Lecciones</th>
+        <td mat-cell *matCellDef="let c">{{ c.numero_lecciones }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="precio">
+        <th mat-header-cell *matHeaderCellDef>Precio</th>
+        <td mat-cell *matCellDef="let c">{{ c.precio | currency: 'USD' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="estado_curso">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let c"><span class="estado" [class]="c.estado_curso">{{ c.estado_curso }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let c" class="actions">
+          <button mat-icon-button type="button" (click)="verContenido(c)" matTooltip="Lecciones y contenido" aria-label="Lecciones y contenido">
+            <mat-icon>library_books</mat-icon>
+          </button>
+          <button mat-icon-button type="button" (click)="verEstudiantes(c)" matTooltip="Estudiantes matriculados" aria-label="Estudiantes matriculados">
+            <mat-icon>groups</mat-icon>
+          </button>
+          @if (esAdmin) {
+            <button
+              mat-icon-button
+              type="button"
+              (click)="cambiarEstado(c)"
+              [matTooltip]="c.estado_curso === 'PUBLICADO' ? 'Ocultar / Pasar a borrador' : 'Publicar curso'"
+              [attr.aria-label]="c.estado_curso === 'PUBLICADO' ? 'Ocultar curso' : 'Publicar curso'"
+            >
+              <mat-icon>{{ c.estado_curso === 'PUBLICADO' ? 'visibility_off' : 'publish' }}</mat-icon>
+            </button>
+          }
+          <button mat-icon-button type="button" (click)="editar(c)" matTooltip="Editar" aria-label="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button type="button" (click)="eliminar(c)" matTooltip="Eliminar" aria-label="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let fila; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons />
+  </div>
+}
