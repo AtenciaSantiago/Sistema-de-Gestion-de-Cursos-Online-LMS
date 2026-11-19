@@ -1,0 +1,199 @@
+
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      // Entregable 2: azul de la marca "Campus Digital" (igual que el Figma del estudiante)
+      primary: mat.$blue-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light;
+
+  background:
+    radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--mat-sys-primary) 14%, transparent), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent), transparent 50%),
+    var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+}
+
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  ::view-transition-old(root) {
+    animation-name: vt-fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: vt-fade-in;
+  }
+}
+
+@keyframes vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.dialog-body {
+  padding-top: 8px;
+}
+
+.dialog-body .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.dialog-body .grid .span-2 {
+  grid-column: 1 / -1;
+}
+// ===== Entregable 2: piezas comunes de las pantallas de administración =====
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font: var(--mat-sys-title-large);
+  }
+
+  .subtitulo {
+    margin: 4px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 12px;
+  background: var(--mat-sys-surface-container-lowest);
+}
+
+td.actions,
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+// Mensaje cuando una lista está vacía (ej. HU-07 esc. 2, HU-10 esc. 2)
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+// Fila de filtros encima de una tabla
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 12px;
+  margin-bottom: 8px;
+
+  mat-form-field {
+    min-width: 280px;
+  }
+}
+
+// Etiqueta de estado (BORRADOR, PUBLICADO, ACTIVA, APROBADA...)
+.estado {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font: var(--mat-sys-label-medium);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+
+  &.PUBLICADO, &.ACTIVA, &.APROBADA, &.APROBADO {
+    background: #e3f5e8;
+    color: #1b6b34;
+  }
+
+  &.PENDIENTE, &.BORRADOR {
+    background: #fff4d6;
+    color: #7a5600;
+  }
+
+  &.REPROBADA, &.RECHAZADO, &.CANCELADA, &.ELIMINAR {
+    background: #fde4e2;
+    color: #9c2b23;
+  }
+
+  &.ACTUALIZAR {
+    background: #e3eefc;
+    color: #1f4e8c;
+  }
+}
+
+// Historial de cambios (RF-07): el detalle puede ser largo
+td.detalle {
+  max-width: 420px;
+  white-space: normal;
+  word-break: break-word;
+  font-size: 0.85em;
+}
+
+.aviso-solo-lectura {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+}

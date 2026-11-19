@@ -1,0 +1,11 @@
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+sqlalchemy>=2.0.0,<2.1  # Entregable 2: la 2.1 cambia el conector de PostgreSQL a psycopg 3, que no está instalado
+psycopg2-binary>=2.9.0
+pydantic>=2.0.0
+pydantic[email]>=2.0.0
+python-dotenv>=1.0.0
+bcrypt>=4.0.1
+httpx>=0.25.0
+PyJWT>=2.8.0
+fpdf2>=2.7.0
