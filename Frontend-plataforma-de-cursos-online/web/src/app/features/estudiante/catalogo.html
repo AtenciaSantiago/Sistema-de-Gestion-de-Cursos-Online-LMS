@@ -1,0 +1,50 @@
+<div class="page-head">
+  <div>
+    <h1>Catálogo de cursos</h1>
+    <p class="sub">Elige un curso, págalo en línea y empieza de inmediato.</p>
+  </div>
+</div>
+
+<!-- Filtro por categoría (HU-06 escenario 2) -->
+<mat-chip-listbox class="filtros" aria-label="Filtrar por categoría">
+  <mat-chip-option [selected]="!categoriaActiva()" (click)="filtrar(null)">Todas</mat-chip-option>
+  @for (c of categorias(); track c.id_categoria) {
+    <mat-chip-option [selected]="categoriaActiva() === c.id_categoria" (click)="filtrar(c.id_categoria)">
+      {{ c.nombre_categoria }}
+    </mat-chip-option>
+  }
+</mat-chip-listbox>
+
+@if (cargando()) {
+  <div class="centro"><mat-spinner diameter="40" /></div>
+} @else if (cursos().length === 0) {
+  <!-- HU-06 esc. 3 -->
+  <p class="vacio">{{ mensajeSinCursos }}</p>
+} @else {
+  <div class="grid-cursos">
+    @for (curso of cursos(); track curso.id_curso) {
+      <mat-card appearance="outlined" class="curso-card">
+        <div class="portada"><mat-icon>auto_stories</mat-icon></div>
+        <mat-card-content>
+          <span class="etiqueta">{{ curso.nombre_categoria }}</span>
+          <h2>{{ curso.nombre_curso }}</h2>
+          <p class="descripcion">{{ curso.descripcion_curso }}</p>
+          <p class="meta">{{ curso.duracion_horas }} horas · {{ curso.numero_lecciones }} {{ curso.numero_lecciones === 1 ? 'lección' : 'lecciones' }} · Docente: {{ curso.nombre_docente }}</p>
+        </mat-card-content>
+        <mat-card-actions class="acciones">
+          <span class="precio">{{ curso.precio ?? 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+          @if (yaLoTiene(curso)) {
+            <!-- HU-09 esc. 3: ya está matriculado, no se le vuelve a cobrar -->
+            <button mat-stroked-button color="primary" type="button" (click)="irAlCurso(curso)">
+              <mat-icon>school</mat-icon> Ir a mi curso
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" type="button" (click)="comprar(curso)">
+              <mat-icon>shopping_cart</mat-icon> Comprar curso
+            </button>
+          }
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+}

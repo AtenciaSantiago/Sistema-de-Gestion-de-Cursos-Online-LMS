@@ -1,0 +1,83 @@
+<div class="page-head">
+  <h1>Auditoría de pagos</h1>
+</div>
+<p class="aviso-solo-lectura">
+  <mat-icon>lock</mat-icon>
+  Los pagos los registra el sistema cuando el estudiante paga en línea (aprobados o rechazados); no se crean ni se editan a mano.
+</p>
+
+<form class="filtros" [formGroup]="filtro" (ngSubmit)="buscar()">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Curso</mat-label>
+    <mat-select formControlName="id_curso">
+      <mat-option value="">Todos</mat-option>
+      @for (c of cursos(); track c.id_curso) {
+        <mat-option [value]="c.id_curso">{{ c.nombre_curso }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Estudiante</mat-label>
+    <mat-select formControlName="id_estudiante">
+      <mat-option value="">Todos</mat-option>
+      @for (e of estudiantes(); track e.id_usuario) {
+        <mat-option [value]="e.id_usuario">{{ e.nombre_usuario }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Desde</mat-label>
+    <input matInput type="date" formControlName="desde" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Hasta</mat-label>
+    <input matInput type="date" formControlName="hasta" />
+  </mat-form-field>
+  <button mat-flat-button color="primary" type="submit"><mat-icon>search</mat-icon> Filtrar</button>
+  <button mat-button type="button" (click)="limpiar()">Limpiar</button>
+</form>
+
+@if (loading()) {
+  <div class="loading"><mat-spinner /></div>
+} @else if (dataSource.data.length === 0) {
+  <div class="vacio mat-elevation-z1">
+    <mat-icon>receipt_long</mat-icon>
+    <p>No hay pagos con esos filtros</p>
+  </div>
+} @else {
+  <div class="table-wrap mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let p">{{ p.fecha_creacion | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="nombre_estudiante">
+        <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+        <td mat-cell *matCellDef="let p">{{ p.nombre_estudiante }}</td>
+      </ng-container>
+      <ng-container matColumnDef="nombre_curso">
+        <th mat-header-cell *matHeaderCellDef>Curso</th>
+        <td mat-cell *matCellDef="let p">{{ p.nombre_curso }}</td>
+      </ng-container>
+      <ng-container matColumnDef="metodo_pago">
+        <th mat-header-cell *matHeaderCellDef>Medio</th>
+        <td mat-cell *matCellDef="let p">{{ p.metodo_pago }}</td>
+      </ng-container>
+      <ng-container matColumnDef="monto">
+        <th mat-header-cell *matHeaderCellDef>Monto</th>
+        <td mat-cell *matCellDef="let p">{{ p.monto | currency: 'USD' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="estado_pago">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let p"><span class="estado" [class]="p.estado_pago">{{ p.estado_pago }}</span></td>
+      </ng-container>
+      <ng-container matColumnDef="referencia">
+        <th mat-header-cell *matHeaderCellDef>Referencia</th>
+        <td mat-cell *matCellDef="let p">{{ p.referencia || '—' }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let fila; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons />
+  </div>
+}

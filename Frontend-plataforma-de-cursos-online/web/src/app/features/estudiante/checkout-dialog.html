@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>Pagar curso</h2>
+
+<mat-dialog-content class="checkout">
+  <div class="resumen">
+    <span>{{ curso.nombre_curso }}</span>
+    <strong>{{ curso.precio ?? 0 | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+  </div>
+
+  @if (resultado(); as r) {
+    <!-- Respuesta de la pasarela -->
+    <div class="estado-pago" [class.ok]="r.aprobado" [class.mal]="!r.aprobado">
+      <mat-icon>{{ r.aprobado ? 'check_circle' : 'error' }}</mat-icon>
+      <div>
+        <strong>{{ r.aprobado ? 'Pago confirmado · Tu lugar en el curso está asegurado' : r.mensaje }}</strong>
+        <p>Referencia {{ r.referencia }} · {{ r.metodo_pago }} · Inscripción {{ r.estado_inscripcion }}</p>
+      </div>
+    </div>
+  } @else {
+    <p class="etiqueta-campo">Método de pago</p>
+    <mat-button-toggle-group [value]="metodo()" (change)="metodo.set($event.value)" class="metodos">
+      <mat-button-toggle value="TARJETA"><mat-icon>credit_card</mat-icon> Tarjeta</mat-button-toggle>
+      <mat-button-toggle value="PSE"><mat-icon>account_balance</mat-icon> PSE</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    @if (metodo() === 'TARJETA') {
+      <form [formGroup]="tarjeta" class="form-pago">
+        <mat-form-field appearance="outline">
+          <mat-label>Número de tarjeta</mat-label>
+          <input matInput formControlName="numero_tarjeta" placeholder="4242 4242 4242 4242" maxlength="19" />
+          <mat-hint>Pasarela de prueba: no se cobra dinero real</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre del titular</mat-label>
+          <input matInput formControlName="titular" />
+        </mat-form-field>
+      </form>
+    } @else {
+      <form [formGroup]="pse" class="form-pago">
+        <mat-form-field appearance="outline">
+          <mat-label>Banco</mat-label>
+          <mat-select formControlName="banco">
+            @for (b of bancos; track b) {
+              <mat-option [value]="b">{{ b }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de persona</mat-label>
+          <mat-select formControlName="tipo_persona">
+            <mat-option value="NATURAL">Natural</mat-option>
+            <mat-option value="JURIDICA">Jurídica</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+    }
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (resultado(); as r) {
+    @if (!r.aprobado) {
+      <button mat-button type="button" (click)="reintentar()">Intentar con otro medio</button>
+    }
+    <button mat-flat-button color="primary" type="button" (click)="cerrar()">
+      {{ r.aprobado ? 'Ir a mi curso' : 'Cerrar' }}
+    </button>
+  } @else {
+    <button mat-button type="button" (click)="cerrar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="pagar()" [disabled]="procesando()">
+      {{ procesando() ? 'Procesando…' : 'Pagar ahora' }}
+    </button>
+  }
+</mat-dialog-actions>
