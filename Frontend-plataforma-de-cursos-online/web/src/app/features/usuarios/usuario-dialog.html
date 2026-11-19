@@ -1,0 +1,57 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo usuario' : 'Editar usuario' }}</h2>
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput formControlName="nombre_usuario" required />
+      <mat-error>{{ form.controls.nombre_usuario.hasError('repetido') ? 'Este nombre de usuario ya existe' : 'Campo obligatorio (sin "&#64;")' }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de documento</mat-label>
+      <mat-select formControlName="tipo_documento" required>
+        <mat-option value="CC">Cédula de ciudadanía</mat-option>
+        <mat-option value="TI">Tarjeta de identidad</mat-option>
+        <mat-option value="CE">Cédula de extranjería</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Número de documento</mat-label>
+      <input matInput formControlName="documento_identidad" required />
+      <mat-error>{{ form.controls.documento_identidad.hasError('repetido') ? 'Este documento ya está registrado' : 'Campo obligatorio' }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Correo electrónico</mat-label>
+      <input matInput type="email" formControlName="email" required />
+      <!-- Entregable 3 (HU-03 esc. 4): el correo repetido queda resaltado con su propio mensaje -->
+      <mat-error>{{ form.controls.email.hasError('repetido') ? 'Este correo ya está registrado' : 'Escriba un correo válido' }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" formControlName="contrasena" autocomplete="new-password" />
+      <mat-hint>{{ data.mode === 'edit' ? 'Vacía = no se cambia' : 'Mínimo 8 caracteres' }}</mat-hint>
+      <mat-error>Mínimo 8 caracteres</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Rol</mat-label>
+      <mat-select formControlName="rol" required>
+        <mat-option value="Admin">Administrador</mat-option>
+        <mat-option value="Docente">Instructor (Docente)</mat-option>
+        <mat-option value="Estudiante">Estudiante</mat-option>
+      </mat-select>
+      @if (esMiCuenta) {
+        <mat-hint>No puede cambiar su propio rol</mat-hint>
+      }
+    </mat-form-field>
+
+    <mat-checkbox formControlName="activo" class="span-2">Cuenta activa (si se desactiva, pierde el acceso)</mat-checkbox>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="guardando()">Guardar</button>
+</mat-dialog-actions>
