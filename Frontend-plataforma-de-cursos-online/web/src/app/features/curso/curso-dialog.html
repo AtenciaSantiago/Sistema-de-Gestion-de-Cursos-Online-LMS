@@ -1,0 +1,60 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo curso' : 'Editar curso' }}</h2>
+
+<mat-dialog-content class="dialog-body">
+  @if (data.mode === 'create') {
+    <p class="aviso-solo-lectura">El curso se crea en estado BORRADOR. El administrador lo publica cuando tenga al menos una lección.</p>
+  }
+
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre del curso</mat-label>
+      <input matInput formControlName="nombre_curso" required />
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Categoría</mat-label>
+      <mat-select formControlName="id_categoria" required>
+        @for (c of categorias(); track c.id_categoria) {
+          <mat-option [value]="c.id_categoria">{{ c.nombre_categoria }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+
+    @if (esAdmin) {
+      <mat-form-field appearance="outline">
+        <mat-label>Profesor asignado</mat-label>
+        <mat-select formControlName="id_docente" required>
+          @for (d of docentes(); track d.id_usuario) {
+            <mat-option [value]="d.id_usuario">{{ d.nombre_usuario }}</mat-option>
+          }
+        </mat-select>
+        <mat-error>Campo obligatorio</mat-error>
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline">
+      <mat-label>Duración (horas)</mat-label>
+      <input matInput type="number" min="1" formControlName="duracion_horas" required />
+      <mat-error>Debe ser de al menos 1 hora</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Precio (USD)</mat-label>
+      <input matInput type="number" min="0" step="0.01" formControlName="precio" required />
+      <mat-error>No puede ser negativo</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput rows="4" formControlName="descripcion_curso" required></textarea>
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="guardando()">Guardar cambios</button>
+</mat-dialog-actions>

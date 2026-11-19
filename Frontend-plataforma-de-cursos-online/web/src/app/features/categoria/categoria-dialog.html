@@ -1,0 +1,14 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nueva categoría' : 'Editar categoría' }}</h2>
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid" (ngSubmit)="save()">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre de la categoría</mat-label>
+      <input matInput formControlName="nombre_categoria" placeholder="Ej. Desarrollo Web" required />
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="guardando()">Guardar</button>
+</mat-dialog-actions>

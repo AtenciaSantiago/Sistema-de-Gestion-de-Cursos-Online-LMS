@@ -115,7 +115,7 @@ Los cinco están verificados con pruebas automáticas (`pytest`), incluidas prue
 
 Dependencias: `Backend-plataforma-de-cursos-online/requirements.txt` (API), `requirements-dev.txt` (pruebas) y `Frontend-plataforma-de-cursos-online/web/package.json` (aplicación web).
 
-El backend lee su configuración de un archivo `.env` dentro de `Backend-plataforma-de-cursos-online/` (no se sube al repositorio):
+El backend lee su configuración de un archivo `.env` dentro de `Backend-plataforma-de-cursos-online/` (para la entrega va incluido en el repositorio con la base de datos de demostración en Neon, así el proyecto arranca sin configurar nada; tiene esta forma):
 
 ```
 DATABASE_URL=postgresql://usuario:clave@servidor/basedatos
@@ -129,7 +129,7 @@ Si falta `DATABASE_URL` o `SECRET_KEY`, la API no arranca y dice cuál falta. La
 
 ### En Windows, con dos clics
 
-1. `1-preparar-base-de-datos.bat`: crea el entorno de Python, pide la cadena de conexión (`.env`), crea las tablas y carga los datos de demostración.
+1. `1-preparar-base-de-datos.bat`: crea el entorno de Python, usa la cadena de conexión del `.env`, crea las tablas y carga los datos de demostración.
 2. `2-iniciar-campus-digital.bat`: enciende la API (puerto 8000) y la aplicación web (http://localhost:4200).
 3. (Opcional) `3-agregar-quiz-python.bat`: agrega una guía y un quiz al curso «Introducción a Python».
 
