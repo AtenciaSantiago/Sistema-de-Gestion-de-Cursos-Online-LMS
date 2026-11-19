@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nueva evaluación' : 'Editar evaluación' }}</h2>
+
+<mat-dialog-content class="dialog-body">
+  <p class="aviso-solo-lectura">Lección {{ data.leccion.orden }}: {{ data.leccion.titulo_leccion }}</p>
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre de la evaluación</mat-label>
+      <input matInput formControlName="nombre_evaluacion" required />
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Porcentaje en el curso</mat-label>
+      <input matInput type="number" min="1" [max]="data.disponible" formControlName="porcentaje" required />
+      <mat-hint>Disponible: {{ data.disponible }} %</mat-hint>
+      <mat-error>Entre 1 y {{ data.disponible }} %</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nota mínima para aprobar</mat-label>
+      <input matInput type="number" min="0" max="5" step="0.1" formControlName="nota_minima" required />
+      <mat-hint>Escala de 0 a 5</mat-hint>
+      <mat-error>Entre 0 y 5</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="guardando()">Guardar</button>
+</mat-dialog-actions>

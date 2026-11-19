@@ -1,0 +1,105 @@
+<div class="page-head">
+  <div>
+    <h1>Evaluación</h1>
+    <p class="sub">Responde todas las preguntas y envía. La nota se calcula de inmediato (escala de 0 a 5).</p>
+  </div>
+  <a mat-stroked-button [routerLink]="['/app/mis-cursos', idCurso]"><mat-icon>arrow_back</mat-icon> Volver al curso</a>
+</div>
+
+@if (cargando()) {
+  <div class="centro"><mat-spinner diameter="40" /></div>
+} @else if (resultado(); as r) {
+  <!-- Resultado de la calificación automática (HU-15 esc. 1 y 2) -->
+  <!-- Entregable 3: si con esta evaluación el curso cerró REPROBADA, la tarjeta no se pinta de éxito -->
+  <mat-card
+    appearance="outlined"
+    class="resultado"
+    [class.ok]="r.aprobada && r.estado_curso !== 'REPROBADA'"
+    [class.aviso]="r.aprobada && r.estado_curso === 'REPROBADA'"
+    [class.mal]="!r.aprobada"
+  >
+    <mat-card-content>
+      <mat-icon>{{ !r.aprobada ? 'replay' : r.estado_curso === 'REPROBADA' ? 'info' : 'emoji_events' }}</mat-icon>
+      <div>
+        <h2>{{ r.estado_curso === 'REPROBADA' ? 'Aprobaste esta evaluación, pero el curso quedó reprobado' : r.mensaje }}</h2>
+        <p>
+          Respuestas correctas: {{ r.correctas }} de {{ r.total }} · Nota: <strong>{{ r.nota }}</strong> / 5.0
+          (mínima {{ r.nota_minima }}) · Intento n.º {{ r.numero_intento }}
+        </p>
+        @if (r.estado_curso === 'APROBADA') {
+          <!-- HU-16 esc. 1: con esta evaluación se cerró el curso y se emitió el certificado -->
+          <p class="cierre">
+            Con esta evaluación terminaste el curso. Promedio final: <strong>{{ r.promedio_curso }}</strong> ·
+            Estado: <strong>APROBADA</strong> · Tu certificado ya está disponible.
+          </p>
+        } @else if (r.estado_curso === 'REPROBADA') {
+          <!-- HU-16 esc. 2: el promedio ponderado no alcanzó 3.5 -->
+          <p class="cierre">
+            Con esta evaluación terminaste el curso. Tu promedio final fue <strong>{{ r.promedio_curso }}</strong> y el mínimo para
+            aprobar el curso es 3.5. Estado: <strong>REPROBADA</strong> · No se emite certificado.
+          </p>
+        }
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <a mat-flat-button color="primary" [routerLink]="['/app/mis-cursos', idCurso]">Volver al curso</a>
+    </mat-card-actions>
+  </mat-card>
+} @else if (anterior()?.puede_presentar === false) {
+  <!-- HU-15 esc. 3: resultado anterior en modo de solo lectura -->
+  @if (anterior(); as a) {
+    <mat-card appearance="outlined" class="resultado" [class.ok]="a.aprobada" [class.mal]="!a.aprobada">
+      <mat-card-content>
+        <mat-icon>{{ a.aprobada ? 'lock' : 'info' }}</mat-icon>
+        <div>
+          <h2>{{ a.nombre_evaluacion }}</h2>
+          <p>
+            {{ a.aprobada ? 'Ya aprobaste esta evaluación; el resultado queda en modo de solo lectura.' : 'El curso ya fue cerrado; esta evaluación no se puede volver a presentar.' }}
+          </p>
+          <p>Nota vigente: <strong>{{ a.nota }}</strong> / 5.0 (mínima {{ a.nota_minima }})</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else {
+  @for (p of preguntas(); track p.id_pregunta; let i = $index) {
+    <mat-card appearance="outlined" class="pregunta">
+      <mat-card-content>
+        <span class="etiqueta">Pregunta {{ i + 1 }} · {{ p.tipo === 'VERDADERO_FALSO' ? 'Verdadero o falso' : 'Opción múltiple' }}</span>
+        <h3>{{ p.enunciado }}</h3>
+        <mat-radio-group [(ngModel)]="respuestas[p.id_pregunta]" class="opciones" [name]="p.id_pregunta">
+          @for (o of p.opciones; track o) {
+            <mat-radio-button [value]="o">{{ o }}</mat-radio-button>
+          }
+        </mat-radio-group>
+      </mat-card-content>
+    </mat-card>
+  }
+  <div class="acciones-fin">
+    <button mat-flat-button color="primary" type="button" (click)="enviar()" [disabled]="!completo() || enviando()">
+      {{ enviando() ? 'Calificando…' : 'Enviar evaluación' }} <mat-icon>send</mat-icon>
+    </button>
+  </div>
+}
+
+<!-- RF-13: todos los intentos quedan guardados -->
+@if (anterior()?.intentos?.length && !resultado()) {
+  <mat-card appearance="outlined" class="pregunta">
+    <mat-card-content>
+      <h3>Mis intentos</h3>
+      <table class="intentos">
+        <tr><th>Intento</th><th>Correctas</th><th>Nota</th><th>Fecha</th></tr>
+        @for (i of anterior()!.intentos; track i.numero_intento) {
+          <tr>
+            <td>{{ i.numero_intento }}</td>
+            <td>{{ i.correctas }} de {{ i.total }}</td>
+            <td>{{ i.nota }}</td>
+            <td>{{ i.fecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        }
+      </table>
+    </mat-card-content>
+  </mat-card>
+}

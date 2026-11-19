@@ -1,0 +1,75 @@
+<h2 mat-dialog-title>Preguntas · {{ evaluacion.nombre_evaluacion }}</h2>
+
+<mat-dialog-content>
+  @if (permisoConsultado() && !editable()) {
+    <!-- HU-14 esc. 2 -->
+    <p class="aviso-solo-lectura"><mat-icon>lock</mat-icon> {{ motivoNoEditable() }}</p>
+  }
+
+  <!-- Las que ya tiene (el docente sí ve la clave) -->
+  @for (p of preguntas(); track p.id_pregunta; let i = $index) {
+    <div class="pregunta">
+      <div>
+        <strong>{{ i + 1 }}. {{ p.enunciado }}</strong>
+        <div class="detalle">
+          {{ p.tipo === 'VERDADERO_FALSO' ? 'Verdadero o falso' : 'Opción múltiple' }} ·
+          Opciones: {{ p.opciones.join(' / ') }} · Clave: <b>{{ p.respuesta_correcta }}</b>
+        </div>
+      </div>
+      @if (editable()) {
+        <button mat-icon-button type="button" (click)="editar(p)" matTooltip="Editar" aria-label="Editar"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button type="button" (click)="eliminar(p)" matTooltip="Eliminar" aria-label="Eliminar"><mat-icon>delete</mat-icon></button>
+      }
+    </div>
+  } @empty {
+    <p>Esta evaluación todavía no tiene preguntas. El estudiante no podrá presentarla hasta que tenga al menos una.</p>
+  }
+
+  @if (editable()) {
+    <h3>{{ editando() ? 'Editar pregunta' : 'Agregar pregunta' }}</h3>
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de pregunta</mat-label>
+        <!-- El tipo no se cambia al editar: cada tipo lo crea su propio creador (Factory Method) -->
+        <mat-select formControlName="tipo" [disabled]="!!editando()">
+          <mat-option value="OPCION_MULTIPLE">Opción múltiple</mat-option>
+          <mat-option value="VERDADERO_FALSO">Verdadero o falso</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Enunciado</mat-label>
+        <input matInput formControlName="enunciado" required />
+      </mat-form-field>
+
+      @if (form.controls.tipo.value === 'OPCION_MULTIPLE') {
+        <mat-form-field appearance="outline">
+          <mat-label>Opciones (una por línea, mínimo 2)</mat-label>
+          <textarea matInput rows="4" formControlName="opcionesTexto"></textarea>
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Respuesta correcta</mat-label>
+        <mat-select formControlName="respuesta_correcta" required>
+          @for (o of opciones(); track o) {
+            <mat-option [value]="o">{{ o }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (editando()) {
+    <button mat-button type="button" (click)="cancelarEdicion()">Cancelar edición</button>
+  }
+  <button mat-button type="button" mat-dialog-close>Cerrar</button>
+  @if (editable()) {
+    <button mat-flat-button color="primary" type="button" (click)="guardar()">
+      <mat-icon>{{ editando() ? 'save' : 'add' }}</mat-icon>
+      {{ editando() ? 'Guardar cambios' : 'Agregar pregunta' }}
+    </button>
+  }
+</mat-dialog-actions>
