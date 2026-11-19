@@ -1,0 +1,118 @@
+@if (error()) {
+  <p class="vacio">{{ error() }}</p>
+} @else if (contenido(); as c) {
+  <div class="page-head">
+    <div>
+      <h1>{{ c.nombre_curso }}</h1>
+      <p class="sub">Inscripción <span [class]="'estado ' + c.estado_inscripcion.toLowerCase()">{{ c.estado_inscripcion }}</span></p>
+    </div>
+    <!-- HU-13: siempre visible; solo se habilita con el curso APROBADO -->
+    <div class="certificado">
+      <button mat-flat-button color="primary" type="button" (click)="descargarCertificado()" [disabled]="!c.certificado_disponible">
+        <mat-icon>workspace_premium</mat-icon> Descargar certificado
+      </button>
+      @if (c.mensaje_certificado) {
+        <small>{{ c.mensaje_certificado }}</small>
+      }
+    </div>
+  </div>
+
+  @if (c.mensaje_cierre) {
+    <!-- HU-16 esc. 3 -->
+    <p class="aviso">
+      <mat-icon>info</mat-icon>
+      {{ c.mensaje_cierre }}.
+      Te faltan {{ c.evaluaciones_pendientes }} {{ c.evaluaciones_pendientes === 1 ? 'evaluación' : 'evaluaciones' }}
+      y {{ c.lecciones_pendientes }} {{ c.lecciones_pendientes === 1 ? 'lección' : 'lecciones' }} por completar.
+    </p>
+  }
+
+  <div class="aula">
+    <!-- Columna izquierda: lecciones en orden y avance -->
+    <mat-card appearance="outlined" class="indice">
+      <mat-card-content>
+        <div class="avance-titulo">
+          <strong>Contenido del curso</strong>
+          <span>{{ c.porcentaje_avance }} %</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="c.porcentaje_avance" />
+        <mat-nav-list>
+          @for (l of c.lecciones; track l.id_leccion) {
+            <a mat-list-item [activated]="seleccionada()?.id_leccion === l.id_leccion" (click)="seleccionar(l)">
+              <mat-icon matListItemIcon [class.hecha]="l.completada">{{ l.completada ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span matListItemTitle>{{ l.orden }}. {{ l.titulo_leccion }}</span>
+              <span matListItemLine>{{ l.duracion_horas }} h · {{ l.completada ? 'Completada' : 'Por completar' }}</span>
+            </a>
+          }
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Columna derecha: la lección elegida -->
+    @if (seleccionada(); as l) {
+      <div class="detalle">
+        <mat-card appearance="outlined">
+          <mat-card-content>
+            <span class="etiqueta">Lección {{ l.orden }} / {{ c.lecciones.length }}</span>
+            <h2>{{ l.titulo_leccion }}</h2>
+            <p class="descripcion">{{ l.descripcion_leccion }}</p>
+          </mat-card-content>
+          <mat-card-actions class="acciones">
+            <span></span>
+            @if (l.completada) {
+              <span class="estado activa"><mat-icon inline>check</mat-icon> Completada</span>
+            } @else if (activa()) {
+              <button mat-flat-button color="primary" type="button" (click)="marcarCompletada(l)">
+                Marcar como completada <mat-icon>check</mat-icon>
+              </button>
+            }
+          </mat-card-actions>
+        </mat-card>
+
+        <div class="dos-columnas">
+          <mat-card appearance="outlined">
+            <mat-card-content>
+              <h3>Material de la lección</h3>
+              @for (m of l.materiales; track m.id_material) {
+                <a class="material" [href]="m.URL_archivo" target="_blank" rel="noopener">
+                  <mat-icon>description</mat-icon>
+                  <span>{{ m.titulo_material }} <small>{{ m.tipo_material }}</small></span>
+                  <mat-icon>open_in_new</mat-icon>
+                </a>
+              } @empty {
+                <p class="meta">Esta lección no tiene material adjunto.</p>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card appearance="outlined">
+            <mat-card-content>
+              <h3>Ponlo en práctica</h3>
+              @if (l.evaluacion; as ev) {
+                <strong>{{ ev.nombre_evaluacion }}</strong>
+                <p class="meta">{{ ev.porcentaje }} % de la nota final · Nota mínima {{ ev.nota_minima }}</p>
+                @if (ev.nota_obtenida !== null) {
+                  <p>Tu nota: <strong>{{ ev.nota_obtenida }}</strong> / 5.0</p>
+                }
+                @if (activa() && !ev.aprobada) {
+                  <a mat-flat-button color="primary" [routerLink]="['/app/mis-cursos', c.id_curso, 'evaluacion', ev.id_evaluacion]">
+                    {{ ev.nota_obtenida === null ? 'Iniciar evaluación' : 'Volver a intentar' }} <mat-icon>arrow_forward</mat-icon>
+                  </a>
+                } @else if (ev.nota_obtenida !== null) {
+                  <!-- HU-15 esc. 3: ya aprobada (o curso cerrado): resultado en solo lectura -->
+                  <a mat-stroked-button color="primary" [routerLink]="['/app/mis-cursos', c.id_curso, 'evaluacion', ev.id_evaluacion]">
+                    Ver mi resultado <mat-icon>visibility</mat-icon>
+                  </a>
+                }
+              } @else {
+                <p class="meta">Esta lección no tiene evaluación.</p>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="centro"><mat-spinner diameter="40" /></div>
+}

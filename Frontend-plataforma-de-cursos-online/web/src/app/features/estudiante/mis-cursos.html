@@ -1,0 +1,40 @@
+<div class="page-head">
+  <div>
+    <h1>Mis cursos</h1>
+    <p class="sub">Tu avance y el estado de cada inscripción.</p>
+  </div>
+  <a mat-stroked-button routerLink="/app/catalogo"><mat-icon>storefront</mat-icon> Ver catálogo</a>
+</div>
+
+@if (cargando()) {
+  <div class="centro"><mat-spinner diameter="40" /></div>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (cursos().length === 0) {
+  <p class="vacio">Todavía no tienes cursos. Explora el catálogo para comprar el primero.</p>
+} @else {
+  <div class="grid-cursos">
+    @for (c of cursos(); track c.id_inscripcion) {
+      <mat-card appearance="outlined" class="curso-card">
+        <mat-card-content>
+          <span class="estado" [class]="'estado ' + c.estado_inscripcion.toLowerCase()">{{ c.estado_inscripcion }}</span>
+          <h2>{{ c.nombre_curso }}</h2>
+          <p class="descripcion">{{ c.descripcion_curso }}</p>
+          <div class="avance">
+            <mat-progress-bar mode="determinate" [value]="c.porcentaje_avance" />
+            <span>{{ c.porcentaje_avance }} % completado</span>
+          </div>
+        </mat-card-content>
+        <mat-card-actions class="acciones">
+          @if (puedeEntrar(c)) {
+            <a mat-flat-button color="primary" [routerLink]="['/app/mis-cursos', c.id_curso]">
+              <mat-icon>arrow_forward</mat-icon> Entrar al curso
+            </a>
+          } @else {
+            <span class="meta">No cuenta con una inscripción activa para visualizar este contenido</span>
+          }
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+}
