@@ -1,0 +1,108 @@
+<div class="login-page">
+  <mat-card class="login-card" appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>
+        @if (loading()) { Cargando... }
+        @else if (!hayUsuarios()) { Crear el primer administrador }
+        @else if (mostrarRegistro()) { Crear cuenta de estudiante }
+        @else { Iniciar sesión }
+      </mat-card-title>
+      <mat-card-subtitle>Campus Digital · Plataforma de cursos en línea</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading()) {
+        <div class="center"><mat-spinner diameter="40" /></div>
+      } @else if (!hayUsuarios() || mostrarRegistro()) {
+        <!-- HU-02: registro. El rol solo se elige al crear el PRIMER usuario (base vacía) -->
+        @if (!hayUsuarios()) {
+          <p class="hint">No hay usuarios en la base. Cree el primero (será el administrador).</p>
+        }
+
+        <form [formGroup]="registroForm" (ngSubmit)="registrarse()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre completo</mat-label>
+            <input matInput formControlName="nombre_usuario" autocomplete="name" />
+            @if (registroForm.controls.nombre_usuario.hasError('pattern')) {
+              <mat-error>El nombre no puede llevar "&#64;"</mat-error>
+            } @else if (registroForm.controls.nombre_usuario.hasError('repetido')) {
+              <mat-error>Este nombre de usuario ya existe</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Tipo de documento</mat-label>
+            <mat-select formControlName="tipo_documento">
+              <mat-option value="CC">Cédula de ciudadanía</mat-option>
+              <mat-option value="TI">Tarjeta de identidad</mat-option>
+              <mat-option value="CE">Cédula de extranjería</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Número de documento</mat-label>
+            <input matInput formControlName="documento_identidad" />
+            @if (registroForm.controls.documento_identidad.hasError('repetido')) {
+              <mat-error>Este documento ya está registrado</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="email" autocomplete="email" />
+            @if (registroForm.controls.email.hasError('email')) {
+              <mat-error>Escriba un correo válido</mat-error>
+            } @else if (registroForm.controls.email.hasError('repetido')) {
+              <!-- Entregable 3 (HU-02 esc. 2): el campo del correo repetido queda resaltado -->
+              <mat-error>Este correo ya está registrado</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="contrasena" autocomplete="new-password" />
+            <mat-hint>Mínimo 8 caracteres</mat-hint>
+          </mat-form-field>
+
+          @if (!hayUsuarios()) {
+            <mat-form-field appearance="outline">
+              <mat-label>Rol</mat-label>
+              <mat-select formControlName="rol">
+                <mat-option value="Admin">Administrador</mat-option>
+                <mat-option value="Docente">Instructor (Docente)</mat-option>
+                <mat-option value="Estudiante">Estudiante</mat-option>
+              </mat-select>
+            </mat-form-field>
+          }
+
+          <div class="span-2 actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="enviando()">Crear cuenta</button>
+          </div>
+        </form>
+
+        @if (hayUsuarios()) {
+          <p class="cambiar-vista">
+            ¿Ya tiene cuenta? <button type="button" class="link" (click)="mostrarRegistro.set(false)">Inicie sesión</button>
+          </p>
+        }
+      } @else {
+        <!-- HU-01: correo (o nombre de usuario) y contraseña -->
+        <form [formGroup]="loginForm" (ngSubmit)="ingresar()" class="login-form">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Correo electrónico o usuario</mat-label>
+            <input matInput formControlName="nombre_usuario" autocomplete="username" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="contrasena" autocomplete="current-password" />
+          </mat-form-field>
+          <button mat-flat-button color="primary" type="submit" class="submit-btn" [disabled]="enviando()">Iniciar sesión</button>
+        </form>
+
+        <p class="cambiar-vista">
+          ¿No tiene cuenta? <button type="button" class="link" (click)="mostrarRegistro.set(true)">Regístrese aquí</button>
+        </p>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
