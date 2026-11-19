@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Nuevo material' : 'Editar material' }}</h2>
+
+<mat-dialog-content class="dialog-body">
+  <form [formGroup]="form" class="grid">
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Nombre del material</mat-label>
+      <input matInput formControlName="titulo_material" required />
+      <mat-error>Campo obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo</mat-label>
+      <mat-select formControlName="tipo_material" required>
+        @for (t of tipos; track t.valor) {
+          <mat-option [value]="t.valor">{{ t.texto }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Enlace (http:// o https://)</mat-label>
+      <input matInput formControlName="URL_archivo" placeholder="https://..." required />
+      <mat-error>Escriba una dirección web completa</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="guardando()">Guardar</button>
+</mat-dialog-actions>

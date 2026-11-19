@@ -1,0 +1,11 @@
+# Archivos generados que no se suben al repositorio
+**/node_modules/
+**/dist/
+**/.angular/
+**/__pycache__/
+**/.pytest_cache/
+**/.env
+*.db
+# Entregable 3: el entorno virtual de Python tampoco se sube (lo crea 1-preparar-base-de-datos.bat)
+**/venv/
+**/.venv/

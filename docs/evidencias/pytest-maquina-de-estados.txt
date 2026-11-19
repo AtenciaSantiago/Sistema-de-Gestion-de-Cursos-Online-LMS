@@ -1,0 +1,36 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+cachedir: .pytest_cache
+rootdir: /opt/Sistema-de-Gestion-de-Cursos-Online-LMS/Backend-plataforma-de-cursos-online
+configfile: pytest.ini
+plugins: platformdirs-4.13.3, anyio-4.15.1
+collecting ... collected 26 items
+
+tests/test_maquina_estados_inscripcion.py::test_cp01_primer_pago_rechazado_crea_la_inscripcion_pendiente PASSED [  3%]
+tests/test_maquina_estados_inscripcion.py::test_cp02_primer_pago_aprobado_crea_la_inscripcion_activa PASSED [  7%]
+tests/test_maquina_estados_inscripcion.py::test_cp03_matricula_manual_crea_la_inscripcion_activa PASSED [ 11%]
+tests/test_maquina_estados_inscripcion.py::test_cp04_reintento_de_pago_aprobado_activa_la_misma_inscripcion PASSED [ 15%]
+tests/test_maquina_estados_inscripcion.py::test_cp05_segundo_pago_rechazado_sigue_pendiente PASSED [ 19%]
+tests/test_maquina_estados_inscripcion.py::test_cp06_matricula_manual_reactiva_una_inscripcion_pendiente PASSED [ 23%]
+tests/test_maquina_estados_inscripcion.py::test_cp07_cancelar_una_inscripcion_pendiente PASSED [ 26%]
+tests/test_maquina_estados_inscripcion.py::test_cp08_cancelar_una_inscripcion_activa_quita_el_acceso PASSED [ 30%]
+tests/test_maquina_estados_inscripcion.py::test_cp12_cierre_automatico_aprueba_y_emite_certificado PASSED [ 34%]
+tests/test_maquina_estados_inscripcion.py::test_cp13_cierre_automatico_reprueba_sin_certificado PASSED [ 38%]
+tests/test_maquina_estados_inscripcion.py::test_cp14_con_pendientes_el_cierre_no_cambia_el_estado[evaluacion_pendiente] PASSED [ 42%]
+tests/test_maquina_estados_inscripcion.py::test_cp14_con_pendientes_el_cierre_no_cambia_el_estado[leccion_pendiente] PASSED [ 46%]
+tests/test_maquina_estados_inscripcion.py::test_cp09_matricula_manual_reactiva_una_inscripcion_cancelada PASSED [ 50%]
+tests/test_maquina_estados_inscripcion.py::test_cp10_pago_aprobado_reactiva_una_inscripcion_cancelada PASSED [ 53%]
+tests/test_maquina_estados_inscripcion.py::test_cp11_pago_rechazado_no_cambia_una_inscripcion_cancelada PASSED [ 57%]
+tests/test_maquina_estados_inscripcion.py::test_cp15_no_se_cancela_una_inscripcion_aprobada PASSED [ 61%]
+tests/test_maquina_estados_inscripcion.py::test_cp16_no_se_cancela_una_inscripcion_reprobada PASSED [ 65%]
+tests/test_maquina_estados_inscripcion.py::test_cp17_no_se_cancela_dos_veces PASSED [ 69%]
+tests/test_maquina_estados_inscripcion.py::test_cp18_pagar_con_inscripcion_activa_se_rechaza_sin_cobrar PASSED [ 73%]
+tests/test_maquina_estados_inscripcion.py::test_cp19_pagar_con_inscripcion_aprobada_se_rechaza PASSED [ 76%]
+tests/test_maquina_estados_inscripcion.py::test_cp20_pagar_con_inscripcion_reprobada_se_rechaza PASSED [ 80%]
+tests/test_maquina_estados_inscripcion.py::test_cp21_matricular_a_quien_ya_esta_activo_se_rechaza PASSED [ 84%]
+tests/test_maquina_estados_inscripcion.py::test_cp22_matricular_a_quien_ya_aprobo_se_rechaza PASSED [ 88%]
+tests/test_maquina_estados_inscripcion.py::test_cp23_matricular_a_quien_ya_reprobo_se_rechaza PASSED [ 92%]
+tests/test_maquina_estados_inscripcion.py::test_cp24_despues_del_cierre_no_se_marca_avance PASSED [ 96%]
+tests/test_maquina_estados_inscripcion.py::test_cp25_con_inscripcion_cancelada_no_se_presenta_la_evaluacion PASSED [100%]
+
+============================= 26 passed in 30.63s ==============================
